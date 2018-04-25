@@ -1,12 +1,14 @@
 from django.db.models import Q
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 from django.contrib import messages
+from django.contrib.contenttypes.models import ContentType
 from django.http import HttpResponse, HttpResponseRedirect, Http404
 from django.shortcuts import render, get_object_or_404, redirect
 from django.utils import timezone
 
 from urllib.parse import quote_plus
 
+from comments.models import Comment
 from .models import Post
 from .forms import PostForm
 
@@ -39,10 +41,14 @@ def post_detail(request, slug=None):
             raise Http404
 
     share_string = quote_plus(instance.content)
+    content_type = ContentType.objects.get_for_model(Post)
+    obj_id = instance.id
+    comments = Comment.objects.filter(content_type=content_type, object_id=obj_id)
     context = {
         "title": instance.title,
         "instance": instance,
         "share_string": share_string,
+        "comments": comments
     }
     return render(request, "post_detail.html", context)
 
@@ -60,7 +66,7 @@ def post_list(request):
             Q(user__first_name__icontains=query) |
             Q(user__last_name__icontains=query)
             ).distinct()
-    paginator = Paginator(queryset, 2)
+    paginator = Paginator(queryset, 4)
     page_request_var = 'page'
     page = request.GET.get(page_request_var)
     posts = paginator.get_page(page)

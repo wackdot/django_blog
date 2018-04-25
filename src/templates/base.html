@@ -9,19 +9,23 @@
     <meta name="description" content="">
     <meta name="author" content="">
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
+    <link rel='stylesheet' href="https://stackpath.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css" integrity="sha384-wvfXpqpZZVQGK6TAh5PVlGOfQNHSoD2xbE+QkPxCAFlNEevoEH3Sl0sibVcOQVnN" crossorigin="anonymous">
     <link rel="stylesheet" type="text/css" href="{% static '/css/base.css' %}">
-    {% block stylesheet %}{% endblock %}
+      
+    {% block head_extra %}{% endblock head_extra %}
   </head>
 
   <body>
       <div id="fb-root"></div>
-      <script>(function(d, s, id) {
+      <script>
+        (function(d, s, id) {
         var js, fjs = d.getElementsByTagName(s)[0];
         if (d.getElementById(id)) return;
         js = d.createElement(s); js.id = id;
         js.src = 'https://connect.facebook.net/en_GB/sdk.js#xfbml=1&version=v2.12';
         fjs.parentNode.insertBefore(js, fjs);
-      }(document, 'script', 'facebook-jssdk'));</script>
+      }(document, 'script', 'facebook-jssdk'));
+      </script>
 
     {% include "message_display.html" %}
 
@@ -39,11 +43,43 @@
       $(document).ready(function(){
         $(".content-markdown").each(function(){
           var content = $(this).text()
-          console.log(content)
           var markedContent = marked(content)
-          console.log(markedContent)
           $(this).html(markedContent)
         })
+        $(".post-detail-item img").each(function(){
+          $(this).addClass("img-responsive");
+        })
+
+        var contentInput = $('#id_content');
+        var titleInput = $('#id_title');
+
+        // Load initial preview title and content
+        setContent(contentInput.val())
+        setTitle(titleInput.val())
+
+        // Update preview title and content
+        contentInput.keyup(function(){
+          var newContent = $(this).val()
+          setContent(newContent)
+        })
+
+        titleInput.keyup(function(){
+          var newTitle = $(this).val()
+          setContent(newTitle)
+        })
+
+        // Update function
+        function setContent(value){
+          var markedContent = marked(value)
+          $('#preview-content').html(markedContent)
+          $('#preview-content img').each(function(){
+            $(this).addClass('img-responsive')
+          })
+        }
+
+        function setTitle(value){
+          $('#preview-title').text(value)
+        }
       })
     </script>
 

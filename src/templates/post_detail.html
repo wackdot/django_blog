@@ -8,7 +8,7 @@
 {% block content %}
     <div class='col-sm-6 col-sm-offset-3'>
         {% if instance.image %}
-            <img src='{{ instance.image.url }}' class='img-responsive'>
+            <img src='{{ instance.image.url }}' class="img-responsive">
         {% endif %}
         <h1>{{ title }} <small> {% if instance.draft %} <span style='color:red;'>Draft</span> {% endif %}  {{ instance.publish }} </small> </h1>
         {% if instance.user %}
@@ -38,12 +38,25 @@
 
         <div class="row">
             <div class="col-sm-12">
-                <div class="content-markdown">
-                    {{ instance.content }} 
+                <div class='post-detail-item'>
+                    {{ instance.get_markdown }} 
                 </div>
                 <hr>
                 <br/>
-                <div class="fb-comments" data-href="{{ request.build_absolute_uri }}" data-numposts="5"></div>
+                <div>
+                    <p class='lead'>Comments</p>
+                    {% for comment in comments %}
+                    {{ comment.content_object }}
+                    {{ comment.content_object.get_markdown }}
+                        <div class=''>                     
+                            {{ comment.content }}
+                            <br>
+                            <small>via {{ comment.user }} | {{ comment.timestamp|timesince }} ago </small>
+                            <hr>
+                        </div>
+                        
+                    {% endfor %}
+                </div>
             </div>
         </div>
     </div>
